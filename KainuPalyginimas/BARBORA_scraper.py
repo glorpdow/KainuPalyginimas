@@ -1,73 +1,64 @@
 from playwright.sync_api import sync_playwright
 import time
 
-# Kai išjungi browserio langą po palieidmo, kažkiek veikia. Visų produktų neišscrapina, bet keli yra. Needs work
-# Yra yra nėra bus
 def scrape_barbora(query):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)  # I love head, gimme head
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         
         url = f"https://barbora.lt/paieska?q={query}"
         page.goto(url, timeout=60000)
-
-        PRODUCT_NAME_LINK_SELECTOR = 'a[href^="/produktai/"]' 
-
-        try:
-            page.wait_for_selector(PRODUCT_NAME_LINK_SELECTOR, timeout=30000)
-        except Exception:
-            print(f"Nu pzdc kzn: {query}")
-            browser.close()
-            return []
-
-        product_links = page.locator(PRODUCT_NAME_LINK_SELECTOR)
-        count = product_links.count()
-
+        
+        products = page.wait_for_selector(".product-card-next", timeout=2000)
+        
+        products = page.locator(".product-card-next")
+        count = products.count()
+        
         results = []
-
+        
         for i in range(count):
-            product_link = product_links.nth(i)
+            print(f"#fti-product-title-category-page-{i}")
+            product_card = products.nth(i)
+            #product = page.locator(f"#fti-product-title-category-page-{i}")
             
-            product_card = product_link.locator('xpath=./../../..') 
-
+            # dats da title
             try:
-                title = product_link.text_content().strip()
+                #title = product.inner_html()
+                title = page.locator(f"#fti-product-title-category-page-{i}").inner_html()
             except:
                 title = None
-
+            
+            # money, money, money
             try:
-                alt_name = product_card.locator("img").get_attribute("alt")
+                #title = product.inner_html()
+                #price = page.locator('div[aria-label^="kaina:"]').get_attribute("aria-label")
+                #price = page.locator(f"#fti-product-card-category-page-{i} [aria-label^='kaina: ']").get_attribute("aria-label")
+                price_element = product_card.locator('meta[itemprop="price"]')
+                price = price_element.get_attribute("content")
+                ### Veikia bet žiauriai žiauriai lėtai
             except:
-                alt_name = None
-
-            price = None
+                price = None
+            # I'm going to fucking kill myself
+            
+            #Reik?, nereik? Bus matyt ig
+            '''
             try:
-                price_block = product_card.locator('[aria-label^="kaina:"]')
-                aria_label = price_block.get_attribute('aria-label')
-                
-                price_str = (
-                    aria_label.split(',')[0]
-                    .replace('kaina:', '')
-                    .replace('€', '')
-                    .replace(',', '.')
-                    .strip()
-                )
-                price = float(price_str)
-            except Exception as e:
-                pass
-
+                #title = product.inner_html()
+                #imagelink = page.locator(".w-full").text_content().strip()
+                imagelink = None
+            except:
+                imagelink = None
+            '''  
+            
             results.append({
+                "i: " : i,
                 "title": title,
-                "alt_slug": alt_name,
-                "price": price,
+                "price" : price
             })
 
         browser.close()
         return results
-
-
+    
 if __name__ == "__main__":
-    products = scrape_barbora("pienas")
-    import json
-    #print(json.dumps(products[:5], indent=4, ensure_ascii=False))
-    print(products)
+    products = scrape_barbora("duona")
+    print(*products, sep='\n')
