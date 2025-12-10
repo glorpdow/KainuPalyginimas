@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import*
 from PySide6.QtGui import*
 from PySide6.QtCore import *
+from PySide6.QtNetwork import*
 from Scraper import scrape_all_stores
-import requests
 
 # pip install -r recomended.txt; python -m playwright install
 
@@ -10,6 +10,7 @@ class Create_Preke(QWidget):
     def __init__(self,i):
         super().__init__()
         
+        self.internet = QNetworkAccessManager()
 
         frame1=QFrame()
         frame1.setFrameShape(QFrame.Box)
@@ -18,23 +19,12 @@ class Create_Preke(QWidget):
         layout=QVBoxLayout(frame1)
         
 
-        image_l1=QLabel()
-        if(i['image'] == None):
-            image_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(150,150,Qt.KeepAspectRatio))   
-        else:
-            image=requests.get(i['image'])
-            if image.status_code == 200:
-                pixmap=QPixmap()
-                pixmap.loadFromData(image.content)
-                image_l1.setPixmap(pixmap.scaled(150,150,Qt.KeepAspectRatio))
-            else:
-                image_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(150,150,Qt.KeepAspectRatio))   
-
-        #image_l1.setMaximumHeight(150)
+        self.image_l1=QLabel()
+        self.image_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(150,150,Qt.KeepAspectRatio))   
+        
+        
 
         title_l1=QLabel(i["title"])
-        #title_l1=QLabel("textetxextete")
-        #title_l1.setStyleSheet("text-font: 10px")
         title_l1.setMaximumWidth(250)
         title_l1.setMinimumHeight(40)
         title_l1.setWordWrap(True)
@@ -52,14 +42,33 @@ class Create_Preke(QWidget):
         kainImg.addWidget(kaina_l1)
         kainImg.addWidget(parde_l1,alignment = Qt.AlignRight)
         
-        layout.addWidget(image_l1,  alignment = Qt.AlignCenter,)
+        layout.addWidget(self.image_l1,  alignment = Qt.AlignCenter,)
         layout.addWidget(title_l1)
         layout.addLayout(kainImg)
 
         main_layout = QVBoxLayout()
         main_layout.addWidget(frame1)
         self.setLayout(main_layout)
-        
+
+
+        if(i['image']!=None):
+            self.LoadImage(i['image'])
+       
+    def LoadImage(self,url):
+
+        request = QNetworkRequest(QUrl(url))
+        atsakims = self.internet.get(request)
+        atsakims.finished.connect(lambda a=atsakims: self.ImageUpload(a))
+
+    def ImageUpload(self,img_reply):
+        if img_reply.error() == QNetworkReply.NoError:
+            img_data=img_reply.readAll()
+            pixmap=QPixmap()
+            pixmap.loadFromData(img_data)
+            self.image_l1.setPixmap(pixmap.scaled(150,150,Qt.KeepAspectRatio))
+        img_reply.deleteLater()
+
+
 
         
 class Main(QWidget):
