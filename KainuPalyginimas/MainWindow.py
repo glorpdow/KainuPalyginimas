@@ -2,6 +2,7 @@ from PySide6.QtWidgets import*
 from PySide6.QtGui import*
 from PySide6.QtCore import *
 from Scraper import scrape_all_stores
+import requests
 
 # pip install -r recomended.txt; python -m playwright install
 
@@ -18,7 +19,17 @@ class Create_Preke(QWidget):
         
 
         image_l1=QLabel()
-        image_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(150,150,Qt.KeepAspectRatio))   
+        if(i['image'] == None):
+            image_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(150,150,Qt.KeepAspectRatio))   
+        else:
+            image=requests.get(i['image'])
+            if image.status_code == 200:
+                pixmap=QPixmap()
+                pixmap.loadFromData(image.content)
+                image_l1.setPixmap(pixmap.scaled(150,150,Qt.KeepAspectRatio))
+            else:
+                image_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(150,150,Qt.KeepAspectRatio))   
+
         #image_l1.setMaximumHeight(150)
 
         title_l1=QLabel(i["title"])
@@ -45,7 +56,6 @@ class Create_Preke(QWidget):
         layout.addWidget(title_l1)
         layout.addLayout(kainImg)
 
-        #self.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
         main_layout = QVBoxLayout()
         main_layout.addWidget(frame1)
         self.setLayout(main_layout)
@@ -79,7 +89,7 @@ class Main(QWidget):
         virsus.addWidget(virsus_search,5, alignment=Qt.AlignLeft)
         
         
-        ### grn filtrai visi jei bus veiks isvis
+        ### grn filtrai visi jei bus isvis
 
         side_scroll = QScrollArea()
         side_scroll.setWidgetResizable(True)
@@ -93,25 +103,32 @@ class Main(QWidget):
         side_l2=QLabel("Kaina:")
         side_l2.setStyleSheet("font-size: 13px; font-weight: bold ")
         
-        self.iki=QCheckBox("Iki")
-        self.barbora=QCheckBox("Barbora")
-        self.iki.setChecked(True)
-        self.barbora.setChecked(True)
+        iki=QCheckBox("Iki")
+        barbora=QCheckBox("Barbora")
+        iki.setChecked(True)
+        barbora.setChecked(True)
         
         self.pard_list = []
 
-        self.iki.toggled.connect(lambda checked: self.PardList('iki',checked))
-        self.barbora.toggled.connect(lambda checked: self.PardList('barbora',checked))
+        iki.toggled.connect(lambda checked: self.PardList('iki',checked))
+        barbora.toggled.connect(lambda checked: self.PardList('barbora',checked))
 
         side_b1= QPushButton("Filtruoti")
         side_b1.clicked.connect(self.add_prekes)
 
 
         sideFilter.addWidget(side_l1)
-        sideFilter.addWidget(self.iki)
-        sideFilter.addWidget(self.barbora)
-        sideFilter.addWidget(side_b1)
+        sideFilter.addWidget(iki)
+        sideFilter.addWidget(barbora)
+     
         sideFilter.addWidget(side_l2)
+
+        self.side_kainafilter = QCheckBox("Filtruoti pagal kainą")
+
+
+        sideFilter.addWidget(self.side_kainafilter)
+        sideFilter.addWidget(side_b1)
+
 
         sideFilter.addStretch()
 
@@ -137,7 +154,7 @@ class Main(QWidget):
 
         self.setLayout(MainLayout)
 
-        self.main_results=[]
+        self.original_main_results=[]
 
     
     def PardList(self,pard,checked):
@@ -146,13 +163,13 @@ class Main(QWidget):
             self.pard_list.append(pard)
         else:
             self.pard_list.remove(pard)
-  
-        
 
 
     def Search(self,query):
         
-        self.main_results = scrape_all_stores(query)
+        self.original_main_results = scrape_all_stores(query)
+        self.filtered_main_results = sorted(self.original_main_results, key=lambda x: float(x.get('price') or 0))
+        #print(self.filtered_main_results)
         self.add_prekes()
         
     
@@ -177,7 +194,11 @@ class Main(QWidget):
         #for i in range(100):
         #for j in self.main_results:
             #for i in range(100):
-        for i in self.main_results:
+        if(self.side_kainafilter.isChecked()):
+            main_results=self.filtered_main_results
+        else:
+            main_results=self.original_main_results
+        for i in main_results:
             if(i['title']==None or i['price']==None or i['shop'] in self.pard_list):
                 continue
 
@@ -191,7 +212,6 @@ class Main(QWidget):
                 col=0
                 row+=1
 
-        
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.mainPrekes.addItem(spacer, row+1, 0)
 
@@ -202,7 +222,6 @@ class Main(QWidget):
 
 
 
-
 app=QApplication()
 
 langs=Main()
@@ -210,10 +229,3 @@ langs.resize(1000,700)
 langs.show()
 
 app.exec()
-
-#result=scrape_barbora("duona")
-
-#for i in result:
-#    print(i)
-#    print(i['title'])
-
