@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9d296ba6-e11e-4118-b723-dea9a2b94288</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>IKI_scraper.py</StartupFile>
+    <StartupFile>ikiscraper.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="BARBORA_scraper.py" />
     <Compile Include="IKI_scraper.py" />
+    <Compile Include="ikiscraper.py" />
     <Compile Include="test.py" />
     <Compile Include="scraper_browser.py" />
     <Compile Include="Scraper.py" />
