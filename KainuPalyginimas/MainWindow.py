@@ -2,7 +2,7 @@ from PySide6.QtWidgets import*
 from PySide6.QtGui import*
 from PySide6.QtCore import *
 from BARBORA_scraper import scrape_barbora
-from IKI_scraper import scrape_iki
+from ikiscraper import scrape_iki
 import sys
 
 class Create_Preke(QWidget):
@@ -267,3 +267,4 @@ app.exec()
 #for i in result:
 #    print(i)
 #    print(i['title'])
+
