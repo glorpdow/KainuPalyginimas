@@ -3,62 +3,61 @@ import time
 
 def scrape_barbora(query):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
-        
-        url = f"https://barbora.lt/paieska?q={query}"
-        page.goto(url, timeout=60000)
-        
-        products = page.wait_for_selector(".product-card-next", timeout=2000)
-        
-        products = page.locator(".product-card-next")
-        count = products.count()
+        REAL_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         
         results = []
-        
-        for i in range(count):
-            print(f"#fti-product-title-category-page-{i}")
-            product_card = products.nth(i)
-            #product = page.locator(f"#fti-product-title-category-page-{i}")
-            
-            # dats da title
-            try:
-                #title = product.inner_html()
-                title = page.locator(f"#fti-product-title-category-page-{i}").inner_html()
-            except:
-                title = None
-            
-            # money, money, money
-            try:
-                #title = product.inner_html()
-                #price = page.locator('div[aria-label^="kaina:"]').get_attribute("aria-label")
-                #price = page.locator(f"#fti-product-card-category-page-{i} [aria-label^='kaina: ']").get_attribute("aria-label")
-                price_element = product_card.locator('meta[itemprop="price"]')
-                price = price_element.get_attribute("content")
-                ### Veikia bet žiauriai žiauriai lėtai
-            except:
-                price = None
-            # I'm going to fucking kill myself
-            
-            #Reik?, nereik? Bus matyt ig
-            '''
-            try:
-                #title = product.inner_html()
-                #imagelink = page.locator(".w-full").text_content().strip()
-                imagelink = None
-            except:
-                imagelink = None
-            '''  
-            
-            results.append({
-                "i: " : i,
-                "title": title,
-                "price" : price
-            })
+        pages = 3
 
-        browser.close()
+        for i in range(pages):
+            browser = p.chromium.launch(headless=False)
+            page = browser.new_page()
+
+            url = f"https://barbora.lt/paieska?q={query}&page={i+1}"
+            page.goto(url, timeout=20000)
+            page.set_default_timeout(10)
+
+            products = page.wait_for_selector(".product-card-next", timeout=20000)
+            
+            products = page.locator(".product-card-next")
+            count = products.count()
+
+            for j in range(count):
+                print(f"#fti-product-title-category-page-{j}")
+                product_card = products.nth(j)
+                #product = page.locator(f"#fti-product-title-category-page-{i}")
+        
+                try:    
+                    title = product_card.locator(f"#fti-product-title-category-page-{j}").inner_html()
+                    
+                except:
+                    title = None
+
+                try:
+                    #title = product.inner_html()
+                    imagelink = product_card.locator("img").get_attribute("src")
+                except:
+                    imagelink = None
+
+
+                try:
+                    price_element = product_card.locator('meta[itemprop="price"]')
+                    price = price_element.get_attribute("content")
+                except:
+                    price = None
+                
+                
+                  
+                
+                results.append({
+                    "title": title,
+                    "price" : price,
+                    "image" : imagelink,
+                    "shop" : "barbora"
+                })
+
+            browser.close()
         return results
     
 if __name__ == "__main__":
-    products = scrape_barbora("duona")
+    products = scrape_barbora("duona", 3)
     print(*products, sep='\n')
