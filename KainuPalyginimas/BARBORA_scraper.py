@@ -3,10 +3,11 @@ import time
 
 def scrape_barbora(query):
     with sync_playwright() as p:
-        REAL_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         
         results = []
         pages = 3
+        run = True
 
         for i in range(pages):
             browser = p.chromium.launch(headless=False)
@@ -16,11 +17,14 @@ def scrape_barbora(query):
             page.goto(url, timeout=20000)
             page.set_default_timeout(10)
 
-            products = page.wait_for_selector(".product-card-next", timeout=20000)
-            
+            try:
+                products = page.wait_for_selector(".product-card-next", timeout=10000)
+            except:
+                break
+
             products = page.locator(".product-card-next")
             count = products.count()
-
+            
             for j in range(count):
                 print(f"#fti-product-title-category-page-{j}")
                 product_card = products.nth(j)
@@ -46,8 +50,6 @@ def scrape_barbora(query):
                     price = None
                 
                 
-                  
-                
                 results.append({
                     "title": title,
                     "price" : price,
@@ -59,5 +61,5 @@ def scrape_barbora(query):
         return results
     
 if __name__ == "__main__":
-    products = scrape_barbora("duona", 3)
+    products = scrape_barbora("duona")
     print(*products, sep='\n')
