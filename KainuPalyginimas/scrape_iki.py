@@ -14,7 +14,6 @@ def getprice():
 
     return f"{price_int}.{price_cents}"
 
-
 def reading(card):
     try:
         return product.locator(card).first.text_content(timeout=250)
@@ -34,7 +33,6 @@ def getdeal():
         return cleaning(product.locator(".nplusn_tag .main").text_content(timeout=250))
     except:
         return None
-
 
 def scrape_iki(query, allpages=True):
     all_results_iki = []
@@ -76,8 +74,6 @@ def scrape_iki(query, allpages=True):
                 image=getimage()
                 deal=getdeal()
 
-
-
                 all_results_iki.append({
                     "title": title,
                     "price": price,
@@ -95,9 +91,7 @@ def scrape_iki(query, allpages=True):
 
     return all_results_iki
 
-
 if __name__ == "__main__":
     data = scrape_iki("pienas")
     print(f"Scraped {len(data)} products total.")
     print(data)
-
