@@ -9,12 +9,12 @@ def scrape_all_stores(product_name: str):
     results = []
 
     try:
-        results.append(scrape_iki(product_name))
+        results.extend(scrape_iki(product_name))
     except Exception as e:
         print("IKI failed:", e)
 
     try:
-        results.append(scrape_barbora(product_name))
+        results.extend(scrape_barbora(product_name))
     except Exception as e:
         print("Barbora failed:", e)
 

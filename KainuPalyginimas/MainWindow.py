@@ -2,7 +2,6 @@ from PySide6.QtWidgets import*
 from PySide6.QtGui import*
 from PySide6.QtCore import *
 from Scraper import scrape_all_stores
-import sys
 
 # pip install -r recomended.txt; python -m playwright install
 
@@ -20,13 +19,13 @@ class Create_Preke(QWidget):
         
 
         image_l1=QLabel()
-        image_l1.setPixmap(QPixmap("images/spongbub.jpg").scaled(150,150,Qt.KeepAspectRatio))   
+        image_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(150,150,Qt.KeepAspectRatio))   
         #image_l1.setMaximumHeight(150)
 
         title_l1=QLabel(i["title"])
         #title_l1=QLabel("textetxextete")
         #title_l1.setStyleSheet("text-font: 10px")
-        title_l1.setMaximumWidth(200)
+        title_l1.setMaximumWidth(250)
         title_l1.setMinimumHeight(40)
         title_l1.setWordWrap(True)
         
@@ -36,7 +35,7 @@ class Create_Preke(QWidget):
         #kaina_l1=QLabel("evro") 
         kaina_l1.setStyleSheet('font-weight: bold')
         parde_l1=QLabel()
-        parde_l1.setPixmap(QPixmap("images/iki.jpeg").scaled(40,40,Qt.KeepAspectRatio))
+        parde_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(40,40,Qt.KeepAspectRatio))
         #parde_l1.setMaximumHeight(40)
 
         kainImg=QHBoxLayout()
@@ -129,18 +128,26 @@ class Main(QWidget):
         side_l2.setStyleSheet("font-size: 13px; font-weight: bold ")
         
         #maxima=QCheckBox("Maxima")
-        iki=QCheckBox("Iki")
+        self.iki=QCheckBox("Iki")
         #rimi=QCheckBox("Rimi")
         #norfa=QCheckBox("Norfa")
-        barbora=QCheckBox("Barbora")
+        self.barbora=QCheckBox("Barbora")
         #sum=QCheckBox("sum other shit idk")
+        self.iki.setChecked(True)
+        self.barbora.setChecked(True)
+        
+        self.pard_list = []
+
+        self.iki.toggled.connect(lambda checked: self.PardList('iki',checked))
+        self.barbora.toggled.connect(lambda checked: self.PardList('barbora',checked))
+
 
         sideFilter.addWidget(side_l1)
         #sideFilter.addWidget(maxima)
-        sideFilter.addWidget(iki)
+        sideFilter.addWidget(self.iki)
         #sideFilter.addWidget(rimi)
         #sideFilter.addWidget(norfa)
-        sideFilter.addWidget(barbora)
+        sideFilter.addWidget(self.barbora)
         #sideFilter.addWidget(sum)
         sideFilter.addWidget(side_l2)
 
@@ -177,6 +184,17 @@ class Main(QWidget):
 
         #self.prekes_rebuild()
 
+    
+    def PardList(self,pard,checked):
+        #print(checked)
+        #print(pard)
+        if(checked == False):
+            self.pard_list.append(pard)
+        else:
+            self.pard_list.remove(pard)
+
+        print(self.pard_list)
+        
 
 
     def Search(self,query):
@@ -213,22 +231,22 @@ class Main(QWidget):
         
 
         #for i in range(100):
-        for j in self.main_results:
+        #for j in self.main_results:
             #for i in range(100):
-            for i in j:
-                if(i['title']==None or i['price']==None):
+        for i in self.main_results:
+            if(i['title']==None or i['price']==None or i['shop'] in self.pard_list):
                     #print("bazinga")
-                    continue
+                continue
 
-                preke=Create_Preke(i)
-                preke.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
+            preke=Create_Preke(i)
+            preke.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
                 #preke.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
-                self.mainPrekes.addWidget(preke,row,col)
+            self.mainPrekes.addWidget(preke,row,col)
 
-                col+=1
-                if col>=colmax:
-                    col=0
-                    row+=1
+            col+=1
+            if col>=colmax:
+                col=0
+                row+=1
 
         
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -282,7 +300,7 @@ class Main(QWidget):
 
 
 
-app=QApplication(sys.argv)
+app=QApplication()
 
 langs=Main()
 langs.resize(1000,700)
