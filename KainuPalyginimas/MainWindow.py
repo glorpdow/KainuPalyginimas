@@ -10,7 +10,6 @@ class Create_Preke(QWidget):
         super().__init__()
         
 
-        #print(i)
         frame1=QFrame()
         frame1.setFrameShape(QFrame.Box)
         frame1.setLineWidth(2)
@@ -33,14 +32,14 @@ class Create_Preke(QWidget):
         kaina_l1=QLabel(f'{i["price"]}€') 
         #kaina_l1.setMaximumHeight(40)
         #kaina_l1=QLabel("evro") 
-        kaina_l1.setStyleSheet('font-weight: bold')
+        kaina_l1.setStyleSheet('font-size: 16px; font-weight: bold')
         parde_l1=QLabel()
         parde_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(40,40,Qt.KeepAspectRatio))
         #parde_l1.setMaximumHeight(40)
 
         kainImg=QHBoxLayout()
         kainImg.addWidget(kaina_l1)
-        kainImg.addWidget(parde_l1)
+        kainImg.addWidget(parde_l1,alignment = Qt.AlignRight)
         
         layout.addWidget(image_l1,  alignment = Qt.AlignCenter,)
         layout.addWidget(title_l1)
@@ -66,49 +65,18 @@ class Main(QWidget):
         virsus_l1.setStyleSheet("font-size: 22px; font-weight: bold")
         virsus_l1.setAlignment(Qt.AlignLeft)
         virsus_l1.setMaximumWidth(200)
-        #virsus_l1.setMinimumWidth(400)
         
         virsus_search=QLineEdit()
         virsus_search.setPlaceholderText("Kokios prekės ieškote?")
         virsus_search.setMaximumWidth(500)
         virsus_search.setMinimumWidth(300)
-        #virsus_search.setAlignment(Qt.AlignLeft)
         virsus_search.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
 
         virsus_search.returnPressed.connect(lambda: self.Search(virsus_search.text()))
 
-        
-        '''self.virsus_kategorijos=QComboBox()
-        self.virsus_kategorijos.setPlaceholderText("Kategorijos")
-        self.virsus_kategorijos.currentIndexChanged.connect(self.KategorijosTransparent) 
-
-        self.virsus_kategorijos.addItems([
-            "Maistas ir gerimai",
-            "Telefonai",
-            "Kompiuterine technika",
-            "Vaizdo, garso technika",
-            "Foto ir video",
-            "Namu ir sporto prekes"
-        ])'''
-        self.idx=-1
-        
-        #virsus_spacer=QSpacerItem(20,20,QSizePolicy.Expanding,QSizePolicy.Fixed)
 
         virsus.addWidget(virsus_l1,2, alignment=Qt.AlignLeft)
         virsus.addWidget(virsus_search,5, alignment=Qt.AlignLeft)
-        #virsus.addItem(virsus_spacer)
-        #virsus.addWidget(self.virsus_kategorijos,2)
-
-        ### cia poto kad sufiltruotu or sum
-        #b1=QPushButton("get values")
-        #b1.clicked.connect(self.B1)
-
-        '''hlayout=QVBoxLayout()
-        hlayout.addLayout(virsus)
-        hlayout.addWidget(b1)
-
-        self.setLayout(hlayout)'''
-        #self.setLayout(virsus)
         
         
         ### grn filtrai visi jei bus veiks isvis
@@ -119,20 +87,14 @@ class Main(QWidget):
  
         sideFilter=QVBoxLayout(side_scroll_layout)
         side_scroll.setWidget(side_scroll_layout)
-        #side_scroll_layout.setStyleSheet("border: 1px")
-        #side_scroll.setStyleSheet("border: 1px")
 
         side_l1=QLabel("Pardavėjai:")
         side_l1.setStyleSheet("font-size: 13px; font-weight: bold ")
         side_l2=QLabel("Kaina:")
         side_l2.setStyleSheet("font-size: 13px; font-weight: bold ")
         
-        #maxima=QCheckBox("Maxima")
         self.iki=QCheckBox("Iki")
-        #rimi=QCheckBox("Rimi")
-        #norfa=QCheckBox("Norfa")
         self.barbora=QCheckBox("Barbora")
-        #sum=QCheckBox("sum other shit idk")
         self.iki.setChecked(True)
         self.barbora.setChecked(True)
         
@@ -141,14 +103,14 @@ class Main(QWidget):
         self.iki.toggled.connect(lambda checked: self.PardList('iki',checked))
         self.barbora.toggled.connect(lambda checked: self.PardList('barbora',checked))
 
+        side_b1= QPushButton("Filtruoti")
+        side_b1.clicked.connect(self.add_prekes)
+
 
         sideFilter.addWidget(side_l1)
-        #sideFilter.addWidget(maxima)
         sideFilter.addWidget(self.iki)
-        #sideFilter.addWidget(rimi)
-        #sideFilter.addWidget(norfa)
         sideFilter.addWidget(self.barbora)
-        #sideFilter.addWidget(sum)
+        sideFilter.addWidget(side_b1)
         sideFilter.addWidget(side_l2)
 
         sideFilter.addStretch()
@@ -162,12 +124,7 @@ class Main(QWidget):
         self.mainPrekes=QGridLayout(scroll_layout)
 
         self.scroll.setWidget(scroll_layout)
-        #self.add_prekes()
-        
-        #scroll_layout.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
-        #self.scroll.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
 
-        
 
 
         miniLayout=QHBoxLayout()
@@ -182,49 +139,36 @@ class Main(QWidget):
 
         self.main_results=[]
 
-        #self.prekes_rebuild()
-
     
     def PardList(self,pard,checked):
-        #print(checked)
-        #print(pard)
+       
         if(checked == False):
             self.pard_list.append(pard)
         else:
             self.pard_list.remove(pard)
-
-        print(self.pard_list)
+  
         
 
 
     def Search(self,query):
         
         self.main_results = scrape_all_stores(query)
-        print(self.main_results)
         self.add_prekes()
         
     
     def add_prekes(self):
         row=0
         col=0
-        #self.main_results=[]
-        #self.main_results.append('ble ble ble')
-        '''barbora_result=scrape_barbora("duona")
-        
-        iki_result= scrape_iki("pienas")
-        self.main_results.append(barbora_result)
-        self.main_results.append(iki_result)'''
 
         while self.mainPrekes.count():
-            #print(sk)
-            #sk+=1
+          
             widgets = self.mainPrekes.takeAt(0)
             if widgets.widget():
                 widgets.widget().setParent(None)
 
         
         width=self.scroll.viewport().width()
-        #print(width)    
+            
         preke_width=200
         colmax=max(1,width//preke_width)
         
@@ -235,12 +179,11 @@ class Main(QWidget):
             #for i in range(100):
         for i in self.main_results:
             if(i['title']==None or i['price']==None or i['shop'] in self.pard_list):
-                    #print("bazinga")
                 continue
 
             preke=Create_Preke(i)
             preke.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
-                #preke.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
+                
             self.mainPrekes.addWidget(preke,row,col)
 
             col+=1
@@ -254,48 +197,8 @@ class Main(QWidget):
 
 
     def resizeEvent(self, event):
-        #if self.main_results == None:
-            #return
         self.add_prekes()
         super().resizeEvent(event)
-    
-    '''def prekes_rebuild(self):
-        #sk=1
-        while self.mainPrekes.count():
-            #print(sk)
-            #sk+=1
-            widgets = self.mainPrekes.takeAt(0)
-            if widgets.widget():
-                widgets.widget().setParent(None)
-
-        
-        width=self.scroll.viewport().width()
-        #print(width)    
-        preke_width=200
-        colmax=max(1,width//preke_width)
-
-        row=0
-        col=0
-        #for i in range(100):
-        for j in self.main_results:
-            for i in range(100):
-            #for i in j:
-                #if(i['title']==None or i['price']==None):
-                    #print("bazinga")
-                    #continue
-                preke=Create_Preke(i)
-                preke.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
-                #preke.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
-                self.mainPrekes.addWidget(preke,row,col)
-
-                col+=1
-                if col>=colmax:
-                    col=0
-                    row+=1
-
-        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self.mainPrekes.addItem(spacer, row+1, 0)'''
-
 
 
 
