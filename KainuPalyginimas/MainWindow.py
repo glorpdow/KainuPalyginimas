@@ -1,35 +1,55 @@
 from PySide6.QtWidgets import*
 from PySide6.QtGui import*
 from PySide6.QtCore import *
+from BARBORA_scraper import scrape_barbora
+from IKI_scraper import scrape_iki
 import sys
 
 class Create_Preke(QWidget):
-    def __init__(self):
+    def __init__(self,i):
         super().__init__()
         
-        layout=QVBoxLayout()
+
+        #print(i)
+        frame1=QFrame()
+        frame1.setFrameShape(QFrame.Box)
+        frame1.setLineWidth(2)
+
+        layout=QVBoxLayout(frame1)
         
 
         image_l1=QLabel()
         image_l1.setPixmap(QPixmap("images/spongbub.jpg").scaled(150,150,Qt.KeepAspectRatio))   
+        #image_l1.setMaximumHeight(150)
 
-        title_l1=QLabel("Title")
-        #title_l1.setStyleSheet()
+        title_l1=QLabel(i["title"])
+        #title_l1=QLabel("textetxextete")
+        #title_l1.setStyleSheet("text-font: 10px")
+        title_l1.setMaximumWidth(200)
+        title_l1.setMinimumHeight(40)
+        title_l1.setWordWrap(True)
+        
 
-        kaina_l1=QLabel("Kaina") 
+        kaina_l1=QLabel(f'{i["price"]}€') 
+        #kaina_l1.setMaximumHeight(40)
+        #kaina_l1=QLabel("evro") 
         parde_l1=QLabel()
         parde_l1.setPixmap(QPixmap("images/iki.jpeg").scaled(40,40,Qt.KeepAspectRatio))
+        #parde_l1.setMaximumHeight(40)
 
         kainImg=QHBoxLayout()
         kainImg.addWidget(kaina_l1)
         kainImg.addWidget(parde_l1)
         
-        layout.addWidget(image_l1,  alignment = Qt.AlignCenter)
+        layout.addWidget(image_l1,  alignment = Qt.AlignCenter,)
         layout.addWidget(title_l1)
         layout.addLayout(kainImg)
 
-        self.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
-        self.setLayout(layout)
+        #self.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(frame1)
+        self.setLayout(main_layout)
+        
 
         
 class Main(QWidget):
@@ -124,6 +144,11 @@ class Main(QWidget):
 
         self.scroll.setWidget(scroll_layout)
         self.add_prekes()
+        
+        #scroll_layout.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
+        #self.scroll.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
+
+        
 
 
         miniLayout=QHBoxLayout()
@@ -137,20 +162,42 @@ class Main(QWidget):
         self.setLayout(MainLayout)
 
         self.prekes_rebuild()
+
+
+
     
     def add_prekes(self):
         row=0
         col=0
+        self.main_results=[]
+        #self.barbora_result = scrape_barbora("duona")
+        barbora_result=scrape_barbora("duona")
+        #self.iki_result= scrape_iki("pienas")
+        iki_result= scrape_iki("pienas")
+        self.main_results.append(barbora_result)
+        self.main_results.append(iki_result)
+        
 
-        for i in range(100):
-            preke=Create_Preke()
+        #for i in range(100):
+        for j in self.main_results:
+            for i in j:
+                if(i['title']==None or i['price']==None):
+                    #print("bazinga")
+                    continue
 
-            self.mainPrekes.addWidget(preke,row,col)
+                preke=Create_Preke(i)
+                preke.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
+                #preke.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
+                self.mainPrekes.addWidget(preke,row,col)
 
-            col+=1
-            if col>=6:
-                col=0
-                row+=1
+                col+=1
+                if col>=6:
+                    col=0
+                    row+=1
+
+        
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.mainPrekes.addItem(spacer, row+1, 0)
 
 ######### ↓↓↓ ASILAS KRW ↓↓↓ KODEL NER NIEKS KAS NORMALIAI PAAISKINTU ############
     def KategorijosTransparent(self):
@@ -165,7 +212,7 @@ class Main(QWidget):
 
     def resizeEvent(self, event):
         self.prekes_rebuild()
-        return super().resizeEvent(event)
+        super().resizeEvent(event)
     
     def prekes_rebuild(self):
         #sk=1
@@ -184,19 +231,25 @@ class Main(QWidget):
 
         row=0
         col=0
-        for i in range(100):
-            preke=Create_Preke()
-            self.mainPrekes.addWidget(preke,row,col)
+        #for i in range(100):
+        for j in self.main_results:
+            for i in j:
+                if(i['title']==None or i['price']==None):
+                    #print("bazinga")
+                    continue
+                preke=Create_Preke(i)
+                preke.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
+                #preke.setStyleSheet("border: 1px solid #ccc; border-radius: 6px; padding: 8px")
+                self.mainPrekes.addWidget(preke,row,col)
 
-            col+=1
-            if col>=colmax:
-                col=0
-                row+=1
+                col+=1
+                if col>=colmax:
+                    col=0
+                    row+=1
 
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.mainPrekes.addItem(spacer, row+1, 0)
 
-    ### future shit
-    def B1(self):
-        print(self.virsus_kategorijos.currentIndex())
 
 
 
@@ -208,3 +261,9 @@ langs.resize(1000,700)
 langs.show()
 
 app.exec()
+
+#result=scrape_barbora("duona")
+
+#for i in result:
+#    print(i)
+#    print(i['title'])
