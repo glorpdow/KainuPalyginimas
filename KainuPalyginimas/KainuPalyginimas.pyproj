@@ -4,14 +4,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9d296ba6-e11e-4118-b723-dea9a2b94288</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>ikiscraper.py</StartupFile>
+    <StartupFile>MainWindow.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>KainuPalyginimas</Name>
     <RootNamespace>KainuPalyginimas</RootNamespace>
-    <InterpreterId>MSBuild|.venv|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|venv|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,19 +23,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BARBORA_scraper.py" />
-    <Compile Include="IKI_scraper.py" />
-    <Compile Include="ikiscraper.py" />
-    <Compile Include="test.py" />
-    <Compile Include="scraper_browser.py" />
+    <Compile Include="MainWindow.py" />
     <Compile Include="Scraper.py" />
-    <Compile Include="modeliaiSQL.py" />
-    <Compile Include="duomenuBaze.py" />
+    <Compile Include="scrape_iki.py" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include=".venv\">
-      <Id>.venv</Id>
+    <Interpreter Include="venv\">
+      <Id>venv</Id>
       <Version>3.9</Version>
-      <Description>.venv (Python 3.9 (64-bit))</Description>
+      <Description>venv (Python 3.9 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
