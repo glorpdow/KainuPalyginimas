@@ -36,7 +36,6 @@ def scrape_barbora(query):
                 #print(f"#fti-product-title-category-page-{j}")
                 print(f"Produktas: {j+1}")
                 product_card = products.nth(j)
-                #product = page.locator(f"#fti-product-title-category-page-{i}")
                 try:    
                     title = product_card.locator(f"#fti-product-title-category-page-{j}").inner_html()
                     title = cleaning(title)
