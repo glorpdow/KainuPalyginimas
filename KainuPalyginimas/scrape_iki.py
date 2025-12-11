@@ -16,12 +16,12 @@ def getprice():
 
 def reading(card):
     try:
-        return product.locator(card).text_content(timeout=250)
+        return product.locator(card).first.text_content(timeout=250)
     except:
         return None
 
 def getimage():
-    jpg=product.locator("img.card-img-top").get_attribute("src")
+    jpg=product.locator("img.card-img-top").first.get_attribute("src")
     
     if not jpg:
         return None
@@ -30,7 +30,7 @@ def getimage():
 
 def getdeal():
     try:
-        return cleaning(product.locator(".nplusn_tag .main").text_content(timeout=50))
+        return cleaning(product.locator(".nplusn_tag .main").first.text_content(timeout=50))
     except:
         return None
 
@@ -92,6 +92,6 @@ def scrape_iki(query, allpages=True):
     return all_results_iki
 
 if __name__ == "__main__":
-    data = scrape_iki("duona")
+    data = scrape_iki("popierius")
     print(f"Scraped {len(data)} products total.")
     print(data)
