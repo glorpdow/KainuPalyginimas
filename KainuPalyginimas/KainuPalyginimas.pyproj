@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9d296ba6-e11e-4118-b723-dea9a2b94288</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>scrape_iki.py</StartupFile>
+    <StartupFile>MainWindow.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

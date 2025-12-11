@@ -4,8 +4,6 @@ from PySide6.QtCore import *
 from PySide6.QtNetwork import*
 from Scraper import scrape_all_stores
 
-# pip install -r recomended.txt; python -m playwright install
-
 class Create_Preke(QWidget):
 
     def __init__(self,i):
@@ -25,8 +23,6 @@ class Create_Preke(QWidget):
         self.image_l1=QLabel()
         self.image_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(150,150,Qt.KeepAspectRatio))   
         
-        
-
         title_l1=QLabel(i["title"])
         title_l1.setMaximumWidth(250)
         title_l1.setMinimumHeight(40)
@@ -34,12 +30,9 @@ class Create_Preke(QWidget):
         
 
         kaina_l1=QLabel(f'{i["price"]}€') 
-        #kaina_l1.setMaximumHeight(40)
-        #kaina_l1=QLabel("evro") 
         kaina_l1.setStyleSheet('font-size: 16px; font-weight: bold')
         parde_l1=QLabel()
         parde_l1.setPixmap(QPixmap(f"images/{i['shop']}.png").scaled(40,40,Qt.KeepAspectRatio))
-        #parde_l1.setMaximumHeight(40)
 
         kainImg=QHBoxLayout()
         kainImg.addWidget(kaina_l1)
@@ -51,7 +44,6 @@ class Create_Preke(QWidget):
 
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(frame1)
-        #self.setLayout(main_layout)
 
 
         if(i['image']!=None):
@@ -80,7 +72,6 @@ class Main(QWidget):
 
         self.setWindowTitle("Kaina25")
         
-        ### grn top juosta
         virsus=QHBoxLayout()
 
         virsus_l1=QLabel("Kaina25")
@@ -100,8 +91,7 @@ class Main(QWidget):
         virsus.addWidget(virsus_l1,2, alignment=Qt.AlignLeft)
         virsus.addWidget(virsus_search,5, alignment=Qt.AlignLeft)
         
-        
-        ### grn filtrai visi jei bus isvis
+
 
         side_scroll = QScrollArea()
         side_scroll.setWidgetResizable(True)
@@ -144,8 +134,7 @@ class Main(QWidget):
 
         sideFilter.addStretch()
 
-        
-        ### Prekes menu tas
+
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
 
