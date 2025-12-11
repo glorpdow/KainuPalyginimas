@@ -3,9 +3,6 @@ from BARBORA_scraper import scrape_barbora
 
 
 def scrape_all_stores(product_name: str):
-    """
-    Runs all scrapers and returns one big result list.
-    """
     results = []
 
     try:
