@@ -18,7 +18,7 @@ def scrape_barbora(query):
 
             print(f"Scrapinama:  puslapis {i+1} --> {url}")
             
-            browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
             page = browser.new_page(user_agent=USER_AGENT)
 
             page.goto(url, timeout=20000)
