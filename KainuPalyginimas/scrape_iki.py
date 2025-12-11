@@ -30,7 +30,7 @@ def getimage():
 
 def getdeal():
     try:
-        return cleaning(product.locator(".nplusn_tag .main").text_content(timeout=250))
+        return cleaning(product.locator(".nplusn_tag .main").text_content(timeout=50))
     except:
         return None
 
@@ -56,7 +56,7 @@ def scrape_iki(query, allpages=True):
             page.goto(url, timeout=15000)
 
             try:
-                page.wait_for_selector(".akcijoskortele", timeout=5000)
+                page.wait_for_selector(".akcijoskortele", timeout=3000)
             except:
                 print("Produktų nerasta.")
                 break
