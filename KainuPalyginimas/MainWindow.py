@@ -7,10 +7,13 @@ from Scraper import scrape_all_stores
 # pip install -r recomended.txt; python -m playwright install
 
 class Create_Preke(QWidget):
+
     def __init__(self,i):
         super().__init__()
         
         self.internet = QNetworkAccessManager()
+        self.setFixedWidth(200)
+        
 
         frame1=QFrame()
         frame1.setFrameShape(QFrame.Box)
@@ -46,9 +49,9 @@ class Create_Preke(QWidget):
         layout.addWidget(title_l1)
         layout.addLayout(kainImg)
 
-        main_layout = QVBoxLayout()
+        main_layout = QVBoxLayout(self)
         main_layout.addWidget(frame1)
-        self.setLayout(main_layout)
+        #self.setLayout(main_layout)
 
 
         if(i['image']!=None):
@@ -60,13 +63,13 @@ class Create_Preke(QWidget):
         atsakims = self.internet.get(request)
         atsakims.finished.connect(lambda a=atsakims: self.ImageUpload(a))
 
-    def ImageUpload(self,img_reply):
-        if img_reply.error() == QNetworkReply.NoError:
-            img_data=img_reply.readAll()
+    def ImageUpload(self,atsakims):
+        if atsakims.error() == QNetworkReply.NoError:
+            img_data=atsakims.readAll()
             pixmap=QPixmap()
             pixmap.loadFromData(img_data)
             self.image_l1.setPixmap(pixmap.scaled(150,150,Qt.KeepAspectRatio))
-        img_reply.deleteLater()
+        atsakims.deleteLater()
 
 
 
@@ -164,6 +167,7 @@ class Main(QWidget):
         self.setLayout(MainLayout)
 
         self.original_main_results=[]
+        self.colmax=1
 
     
     def PardList(self,pard,checked):
@@ -178,7 +182,7 @@ class Main(QWidget):
         
         self.original_main_results = scrape_all_stores(query)
         self.filtered_main_results = sorted(self.original_main_results, key=lambda x: float(x.get('price') or 0))
-        #print(self.filtered_main_results)
+        
         self.add_prekes()
         
     
@@ -192,17 +196,7 @@ class Main(QWidget):
             if widgets.widget():
                 widgets.widget().setParent(None)
 
-        
-        width=self.scroll.viewport().width()
-            
-        preke_width=200
-        colmax=max(1,width//preke_width)
-        
-        
 
-        #for i in range(100):
-        #for j in self.main_results:
-            #for i in range(100):
         if(self.side_kainafilter.isChecked()):
             main_results=self.filtered_main_results
         else:
@@ -217,16 +211,22 @@ class Main(QWidget):
             self.mainPrekes.addWidget(preke,row,col)
 
             col+=1
-            if col>=colmax:
+            if col>=self.colmax:
                 col=0
                 row+=1
 
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.mainPrekes.addItem(spacer, row+1, 0)
 
-
-    def resizeEvent(self, event):
-        self.add_prekes()
+    def resizeEvent(self,event):
+        
+        width=self.scroll.viewport().width()
+        preke_width=200
+        colnow=max(1,width//preke_width)
+        if(colnow!=self.colmax):
+            self.colmax=colnow
+            self.add_prekes()
+            
         super().resizeEvent(event)
 
 
