@@ -25,7 +25,7 @@ def scrape_barbora(query):
             page.set_default_timeout(20)
 
             try:
-                products = page.wait_for_selector(".product-card-next", timeout=10000)
+                page.wait_for_selector(".product-card-next", timeout=10000)
             except:
                 break
 
